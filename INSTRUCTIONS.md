@@ -3,7 +3,7 @@
 Install project dependencies
 
 ```bash
-uv add crewai crewai-tools
+uv add crewai crewai-tools streamlit
 ```
 
 Run your project
