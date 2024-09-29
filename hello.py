@@ -1,7 +1,9 @@
 import logging
 
+import streamlit as st
 from crewai import LLM, Agent, Crew, Process, Task
 from langchain.prompts import PromptTemplate
+from langchain_core.callbacks import BaseCallbackHandler
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -35,6 +37,17 @@ Now, please address the following task:
 Begin your response:
 """)
 
+class StreamlitCallbackHandler(BaseCallbackHandler):
+    def __init__(self, agent_name: str):
+        self.agent_name = agent_name
+
+    def on_chain_start(self, serialized: dict, inputs: dict, **kwargs):
+        st.write(f"{self.agent_name} is starting...")
+
+    def on_chain_end(self, outputs: dict, **kwargs):
+        st.write(f"{self.agent_name} has finished.")
+        st.write(outputs['output'])
+
 def create_agent(role, goal, backstory, llm):
     return Agent(
         role=role,
@@ -47,7 +60,8 @@ def create_agent(role, goal, backstory, llm):
         agent_kwargs={
             "handle_parsing_errors": True,
             "prompt": custom_prompt
-        }
+        },
+        callbacks=[StreamlitCallbackHandler(role)]
     )
 
 def create_travel_crew(destination):
@@ -117,9 +131,16 @@ def create_travel_crew(destination):
     crew_result = travel_crew.kickoff()
     return crew_result
 
+# Streamlit UI
+st.title("🌍 AI Travel Planner")
+
+destination = st.text_input("Enter your destination:", "Paris")
+if st.button("Plan My Trip"):
+    with st.spinner("Planning your trip..."):
+        result = create_travel_crew(destination)
+    
+    st.success("Your travel plan is ready!")
+    st.write(result)
+
 if __name__ == "__main__":
-    destination = "Paris"  # You can change this or make it a command-line argument
-    logger.info(f"Creating travel crew for destination: {destination}")
-    result = create_travel_crew(destination)
-    logger.info("Travel Crew Result:")
-    logger.info(result)
+    logger.info("Travel Planner app is running")
