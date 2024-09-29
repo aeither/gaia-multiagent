@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 custom_llm = LLM(
     model="openai/phi",
     base_url="https://phi.us.gaianet.network/v1",
-    api_key="any_value"
+    api_key="any_value",
 )
 
 # Define a custom prompt template
