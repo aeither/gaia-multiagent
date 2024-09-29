@@ -8,4 +8,5 @@ dependencies = [
     "crewai[tools]>=0.65.2",
     "crewai-tools>=0.12.1",
     "streamlit>=1.38.0",
+    "duckduckgo-search>=6.2.13",
 ]
