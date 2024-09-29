@@ -916,8 +916,10 @@ dependencies = [
     { name = "crewai-tools" },
     { name = "duckduckgo-search" },
     { name = "litellm" },
+    { name = "python-dotenv" },
     { name = "requests" },
     { name = "streamlit" },
+    { name = "upstash-vector" },
 ]
 
 [package.metadata]
@@ -926,8 +928,10 @@ requires-dist = [
     { name = "crewai-tools", specifier = ">=0.12.1" },
     { name = "duckduckgo-search", specifier = ">=6.2.13" },
     { name = "litellm", specifier = ">=1.48.6" },
+    { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "streamlit", specifier = ">=1.38.0" },
+    { name = "upstash-vector", specifier = ">=0.6.0" },
 ]
 
 [[package]]
@@ -3805,6 +3809,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e1/34/943888654477a574a86a98e9896bae89c7aa15078ec29f490fef2f1e5384/tzdata-2024.2.tar.gz", hash = "sha256:7d85cc416e9382e69095b7bdf4afd9e3880418a2413feec7069d533d6b4e31cc", size = 193282 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a6/ab/7e5f53c3b9d14972843a647d8d7a853969a58aecc7559cb3267302c94774/tzdata-2024.2-py2.py3-none-any.whl", hash = "sha256:a48093786cdcde33cad18c2555e8532f34422074448fbc874186f0abd79565cd", size = 346586 },
+]
+
+[[package]]
+name = "upstash-vector"
+version = "0.6.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/94/a6/a9178fef247687917701a60eb66542eb5361c58af40c033ba8174ff7366d/upstash_vector-0.6.0.tar.gz", hash = "sha256:a716ed4d0251362208518db8b194158a616d37d1ccbb1155f619df690599e39b", size = 15075 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5d/45/95073b83b7fd7b83f10ea314f197bae3989bfe022e736b90145fe9ea4362/upstash_vector-0.6.0-py3-none-any.whl", hash = "sha256:d0bdad7765b8a7f5c205b7a9c81ca4b9a4cee3ee4952afc7d5ea5fb76c3f3c3c", size = 15061 },
 ]
 
 [[package]]

@@ -11,4 +11,6 @@ dependencies = [
     "duckduckgo-search>=6.2.13",
     "requests>=2.32.3",
     "litellm>=1.48.6",
+    "upstash-vector>=0.6.0",
+    "python-dotenv>=1.0.1",
 ]

@@ -71,7 +71,6 @@ class StreamToExpander:
             self.expander.markdown(''.join(self.buffer), unsafe_allow_html=True)
             self.buffer = []
 
-
 def create_agent(role, goal, backstory, llm):
     return Agent(
         role=role,
