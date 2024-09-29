@@ -915,6 +915,8 @@ dependencies = [
     { name = "crewai", extra = ["tools"] },
     { name = "crewai-tools" },
     { name = "duckduckgo-search" },
+    { name = "litellm" },
+    { name = "requests" },
     { name = "streamlit" },
 ]
 
@@ -923,6 +925,8 @@ requires-dist = [
     { name = "crewai", extras = ["tools"], specifier = ">=0.65.2" },
     { name = "crewai-tools", specifier = ">=0.12.1" },
     { name = "duckduckgo-search", specifier = ">=6.2.13" },
+    { name = "litellm", specifier = ">=1.48.6" },
+    { name = "requests", specifier = ">=2.32.3" },
     { name = "streamlit", specifier = ">=1.38.0" },
 ]
 
