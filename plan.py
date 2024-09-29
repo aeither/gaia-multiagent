@@ -1,4 +1,6 @@
 import logging
+import re
+import sys
 
 import streamlit as st
 from crewai import LLM, Agent, Crew, Process, Task
@@ -37,16 +39,38 @@ Now, please address the following task:
 Begin your response:
 """)
 
-class StreamlitCallbackHandler(BaseCallbackHandler):
-    def __init__(self, agent_name: str):
-        self.agent_name = agent_name
 
-    def on_chain_start(self, serialized: dict, inputs: dict, **kwargs):
-        st.write(f"{self.agent_name} is starting...")
+class StreamToExpander:
+    def __init__(self, expander):
+        self.expander = expander
+        self.buffer = []
+        self.colors = ['red', 'green', 'blue', 'orange']
+        self.color_index = 0
 
-    def on_chain_end(self, outputs: dict, **kwargs):
-        st.write(f"{self.agent_name} has finished.")
-        st.write(outputs['output'])
+    def write(self, data):
+        cleaned_data = re.sub(r'\x1B\[[0-9;]*[mK]', '', data)
+        task_match_object = re.search(r'\"task\"\s*:\s*\"(.*?)\"', cleaned_data, re.IGNORECASE)
+        task_match_input = re.search(r'task\s*:\s*([^\n]*)', cleaned_data, re.IGNORECASE)
+        task_value = None
+        if task_match_object:
+            task_value = task_match_object.group(1)
+        elif task_match_input:
+            task_value = task_match_input.group(1).strip()
+        if task_value:
+            st.toast(":robot_face: " + task_value)
+        if "Entering new CrewAgentExecutor chain" in cleaned_data:
+            self.color_index = (self.color_index + 1) % len(self.colors)
+            cleaned_data = cleaned_data.replace("Entering new CrewAgentExecutor chain", f":{self.colors[self.color_index]}[Entering new CrewAgentExecutor chain]")
+        for role in ["Travel Advisor", "City Explorer", "Activity Scout", "Logistics Coordinator"]:
+            if role in cleaned_data:
+                cleaned_data = cleaned_data.replace(role, f":{self.colors[self.color_index]}[{role}]")
+        if "Finished chain." in cleaned_data:
+            cleaned_data = cleaned_data.replace("Finished chain.", f":{self.colors[self.color_index]}[Finished chain.]")
+        self.buffer.append(cleaned_data)
+        if "\n" in data:
+            self.expander.markdown(''.join(self.buffer), unsafe_allow_html=True)
+            self.buffer = []
+
 
 def create_agent(role, goal, backstory, llm):
     return Agent(
@@ -61,7 +85,7 @@ def create_agent(role, goal, backstory, llm):
             "handle_parsing_errors": True,
             "prompt": custom_prompt
         },
-        callbacks=[StreamlitCallbackHandler(role)]
+        # callbacks=[StreamlitCallbackHandler(role)]
     )
 
 def create_travel_crew(destination):
@@ -134,13 +158,23 @@ def create_travel_crew(destination):
 # Streamlit UI
 st.title("🌍 AI Travel Planner")
 
-destination = st.text_input("Enter your destination:", "Paris")
-if st.button("Plan My Trip"):
-    with st.spinner("Planning your trip..."):
-        result = create_travel_crew(destination)
-    
+
+with st.sidebar:
+    st.header("👇 Enter your trip details")
+    with st.form("my_form"):
+        destination = st.text_input("Enter your destination:", "Paris")
+        submitted = st.form_submit_button("Plan My Trip")
+        
+if submitted:
+    with st.status("🤖 **Planning your trip...**", state="running", expanded=True) as status:
+        with st.container(height=500, border=False):
+            expander = st.empty()
+            # sys.stdout = StreamToExpander(expander)
+            result = create_travel_crew(destination)
+        status.update(label="✅ Trip Plan Ready!", state="complete", expanded=False)
     st.success("Your travel plan is ready!")
-    st.write(result)
+    st.subheader("Here is your Trip Plan", anchor=False, divider="rainbow")
+    st.markdown(result)
 
 if __name__ == "__main__":
     logger.info("Travel Planner app is running")
