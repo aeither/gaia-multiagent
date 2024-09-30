@@ -1,5 +1,6 @@
 <img src="https://github.com/user-attachments/assets/3e6806fc-b4e7-42a3-93ba-95efa585d053" alt="Futuristic banner design" width="600">
 
+A decentralized AI-powered shopping assistant combining top tech influencers' expertise with real-time product data for comprehensive, up-to-date tech insights
 
 ## Overview
 
