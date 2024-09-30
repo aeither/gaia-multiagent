@@ -1,7 +1,7 @@
 
 ## Overview
 
-TechTrio is a cutting-edge Living Knowledge System that leverages the power of decentralized AI to provide users with comprehensive, up-to-date insights on the latest tech products. By combining the expertise of top tech influencers, real-time product information, and advanced AI models, TechTrio offers an unparalleled shopping assistant experience for tech enthusiasts.
+TechTrio Gaia Multiagent is a cutting-edge Living Knowledge System that leverages the power of decentralized AI to provide users with comprehensive, up-to-date insights on the latest tech products. By combining the expertise of top tech influencers, real-time product information, and advanced AI models, TechTrio offers an unparalleled shopping assistant experience for tech enthusiasts.
 
 ### Key Features
 
