@@ -1,5 +1,3 @@
-from typing import Callable, Dict
-
 from crewai import LLM, Agent, Crew, Task
 from crewai_tools import tool
 
