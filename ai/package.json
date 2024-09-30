@@ -1,6 +1,7 @@
 {
 	"dependencies": {
 		"@ai-sdk/openai": "^0.0.63",
+		"@upstash/rag-chat": "^1.6.4",
 		"@upstash/vector": "^1.1.6",
 		"ai": "^3.4.7",
 		"gpt-tokenizer": "^2.4.0",

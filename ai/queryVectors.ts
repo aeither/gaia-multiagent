@@ -6,15 +6,15 @@ import { z } from "zod";
 
 dotenv.config();
 
-if (!process.env.UPSTASH_VECTOR_URL)
-	throw new Error("UPSTASH_VECTOR_URL not found");
-const UPSTASH_VECTOR_URL = process.env.UPSTASH_VECTOR_URL;
+if (!process.env.UPSTASH_VECTOR_REST_URL)
+	throw new Error("UPSTASH_VECTOR_REST_URL not found");
+const UPSTASH_VECTOR_REST_URL = process.env.UPSTASH_VECTOR_REST_URL;
 if (!process.env.UPSTASH_VECTOR_REST_TOKEN)
 	throw new Error("UPSTASH_VECTOR_REST_TOKEN not found");
 
 const UPSTASH_VECTOR_REST_TOKEN = process.env.UPSTASH_VECTOR_REST_TOKEN;
 const index = new Index({
-	url: UPSTASH_VECTOR_URL,
+	url: UPSTASH_VECTOR_REST_URL,
 	token: UPSTASH_VECTOR_REST_TOKEN,
 });
 

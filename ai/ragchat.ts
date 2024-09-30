@@ -1,40 +1,31 @@
-import { createOpenAI as createGroq } from "@ai-sdk/openai";
+import { RAGChat, custom } from "@upstash/rag-chat";
 import { Index } from "@upstash/vector";
-import { embedMany } from "ai";
 import dotenv from "dotenv";
-import { encode } from "gpt-tokenizer";
 
 dotenv.config();
 
 if (!process.env.UPSTASH_VECTOR_REST_URL)
 	throw new Error("UPSTASH_VECTOR_REST_URL not found");
-const UPSTASH_VECTOR_REST_URL = process.env.UPSTASH_VECTOR_REST_URL;
 if (!process.env.UPSTASH_VECTOR_REST_TOKEN)
 	throw new Error("UPSTASH_VECTOR_REST_TOKEN not found");
 
+const UPSTASH_VECTOR_REST_URL = process.env.UPSTASH_VECTOR_REST_URL;
 const UPSTASH_VECTOR_REST_TOKEN = process.env.UPSTASH_VECTOR_REST_TOKEN;
-const index = new Index({
+
+// Initialize the Vector Index
+const vectorIndex = new Index({
 	url: UPSTASH_VECTOR_REST_URL,
 	token: UPSTASH_VECTOR_REST_TOKEN,
 });
 
-const groq = createGroq({
-	baseURL: "https://llamatool.us.gaianet.network/v1",
-	apiKey: "no_key",
+// Initialize RAGChat with custom LLaMA Tool model
+const ragChat = new RAGChat({
+	model: custom("phi", {
+		apiKey: "no_key",
+		baseUrl: "https://phi.us.gaianet.network/v1",
+	}),
+	vector: vectorIndex,
 });
-
-function tokenLen(text: string): number {
-	return encode(text).length;
-}
-
-async function getEmbeddings(chunks: string[]): Promise<number[][]> {
-	const cleanChunks = chunks.map((c) => c.replace("\n", " "));
-	const { embeddings } = await embedMany({
-		model: groq.embedding("bge-base-en-v1.5"),
-		values: cleanChunks,
-	});
-	return embeddings;
-}
 
 function createMockText(): string {
 	return `
@@ -50,25 +41,24 @@ function createMockText(): string {
   `;
 }
 
-function chunkText(text: string): string[] {
-	return text.split(/\n+/).filter((chunk) => chunk.trim().length > 0);
-}
-
-async function upsertVectors(chunks: string[]): Promise<void> {
-	const embeddings = await getEmbeddings(chunks);
-	const vectors = chunks.map((chunk, i) => ({
-		id: `chunk-${i}`,
-		vector: embeddings[i],
-		metadata: { text: chunk },
-	}));
-	await index.upsert(vectors);
-	console.log(`${vectors.length} vectors upserted successfully`);
-}
-
 async function main() {
 	const mockText = createMockText();
-	const chunks = chunkText(mockText);
-	await upsertVectors(chunks);
+
+	// Add the mock text to the RAGChat context
+	await ragChat.context.add({
+		type: "text",
+		data: mockText,
+	});
+
+	// Example chat interaction
+	const response = await ragChat.chat(
+		"Tell me about Bill Evans' most famous album.",
+	);
+	console.log("AI Response:", response.output);
+
+	// Retrieve chat history
+	const history = await ragChat.history.getMessages({ amount: 2 });
+	console.log("Chat History:", history);
 }
 
 main().catch(console.error);
