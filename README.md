@@ -1,7 +1,13 @@
+<img src="https://github.com/user-attachments/assets/3e6806fc-b4e7-42a3-93ba-95efa585d053" alt="Futuristic banner design" width="600">
+
 
 ## Overview
 
 TechTrio Gaia Multiagent is a cutting-edge Living Knowledge System that leverages the power of decentralized AI to provide users with comprehensive, up-to-date insights on the latest tech products. By combining the expertise of top tech influencers, real-time product information, and advanced AI models, TechTrio offers an unparalleled shopping assistant experience for tech enthusiasts.
+
+
+<img width="889" alt="excalidraw" src="https://github.com/user-attachments/assets/0ec3de4b-7db9-438f-8c90-050d023011bf">
+
 
 ### Key Features
 
