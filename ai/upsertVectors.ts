@@ -1,4 +1,4 @@
-import { createOpenAI as createGroq } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { Index } from "@upstash/vector";
 import { embedMany } from "ai";
 import dotenv from "dotenv";
@@ -17,7 +17,7 @@ const index = new Index({
 	token: UPSTASH_VECTOR_REST_TOKEN,
 });
 
-const groq = createGroq({
+const groq = createOpenAI({
 	baseURL: "https://llamatool.us.gaianet.network/v1",
 	apiKey: "no_key",
 });
