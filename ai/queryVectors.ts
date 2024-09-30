@@ -1,8 +1,13 @@
-import { createOpenAI as createGroq } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { Index } from "@upstash/vector";
 import { embed, generateText, tool } from "ai";
 import dotenv from "dotenv";
 import { z } from "zod";
+import {
+	MKBHD_PROMPT,
+	MR_WHOS_THE_BOSS_PROMPT,
+	UNBOX_THERAPY_PROMPT,
+} from "./systemPrompts";
 
 dotenv.config();
 
@@ -17,15 +22,34 @@ const index = new Index({
 	url: UPSTASH_VECTOR_REST_URL,
 	token: UPSTASH_VECTOR_REST_TOKEN,
 });
-
-const groq = createGroq({
+const inventory = createOpenAI({
 	baseURL: "https://llamatool.us.gaianet.network/v1",
+	apiKey: "no_key",
+});
+
+const moderator = createOpenAI({
+	baseURL: "https://sreeram.us.gaianet.network/v1",
+	apiKey: "no_key",
+});
+
+const llama = createOpenAI({
+	baseURL: "https://llama.us.gaianet.network/v1",
+	apiKey: "no_key",
+});
+
+const phi = createOpenAI({
+	baseURL: "https://phi.us.gaianet.network/v1",
+	apiKey: "no_key",
+});
+
+const gemma = createOpenAI({
+	baseURL: "https://gemma.us.gaianet.network/v1",
 	apiKey: "no_key",
 });
 
 async function getEmbedding(text: string): Promise<number[]> {
 	const { embedding } = await embed({
-		model: groq.embedding("bge-base-en-v1.5"),
+		model: inventory.embedding("bge-base-en-v1.5"),
 		value: text.replace("\n", " "),
 	});
 	return embedding;
@@ -59,15 +83,95 @@ const billEvansQA = tool({
 });
 
 async function main() {
-	const { text } = await generateText({
-		model: groq("llama"),
-		tools: { billEvansQA },
-		maxSteps: 5,
-		prompt:
-			"Who is Debby in the album 'Waltz for Debby'? Also, where did Bill Evans study?",
-	});
+	const generateInventoryText = async (prompt: string) => {
+		const { text } = await generateText({
+			model: inventory("llama"),
+			tools: { billEvansQA },
+			maxSteps: 5,
+			prompt,
+		});
+		return text;
+	};
 
-	console.log("Assistant:", text);
+	const generateMKBHDText = async (prompt: string) => {
+		const { text } = await generateText({
+			model: llama("llama"),
+			maxSteps: 5,
+			system: MKBHD_PROMPT,
+			prompt,
+		});
+		return text;
+	};
+
+	const generateUnboxTherapyText = async (prompt: string) => {
+		const { text } = await generateText({
+			model: phi("phi"),
+			maxSteps: 5,
+			system: UNBOX_THERAPY_PROMPT,
+			prompt,
+		});
+		return text;
+	};
+
+	const generateMrWhosTheBossText = async (prompt: string) => {
+		const { text } = await generateText({
+			model: gemma("gemma"),
+			maxSteps: 5,
+			system: MR_WHOS_THE_BOSS_PROMPT,
+			prompt,
+		});
+		return text;
+	};
+
+	const generateModeratorSummary = async (
+		mkbhdText: string,
+		unboxTherapyText: string,
+		mrWhosTheBossText: string,
+	) => {
+		const prompt = `Summarize and compare the following reviews of the iPhone 15 Pro from three tech reviewers. Then provide a conclusion to help with the buying decision:
+
+MKBHD Review:
+${mkbhdText}
+
+Unbox Therapy Review:
+${unboxTherapyText}
+
+MrWhosTheBoss Review:
+${mrWhosTheBossText}
+
+Please provide a summary that compares the key points from each reviewer, highlighting agreements and disagreements. Then, offer a conclusion to help potential buyers make an informed decision.`;
+
+		const { text } = await generateText({
+			model: moderator("llama"),
+			maxSteps: 5,
+			system:
+				"You are an impartial moderator tasked with summarizing and comparing tech reviews. Provide clear, concise summaries and a balanced conclusion to aid in purchasing decisions.",
+			prompt,
+		});
+		return text;
+	};
+
+	const prompt =
+		"What are your thoughts on the latest iPhone 15 Pro? Compare its features, performance, and value proposition to its main Android competitors. Also, how does its camera system stack up against other flagship phones?";
+
+	const inventoryText = await generateInventoryText(prompt);
+	const mkbhdText = await generateMKBHDText(prompt);
+	const unboxTherapyText = await generateUnboxTherapyText(prompt);
+	const mrWhosTheBossText = await generateMrWhosTheBossText(prompt);
+
+	console.log("Inventory:", inventoryText);
+	console.log("MKBHD:", mkbhdText);
+	console.log("Unbox Therapy:", unboxTherapyText);
+	console.log("MrWhosTheBoss:", mrWhosTheBossText);
+
+	// Generate and log the moderator's summary
+	const moderatorSummary = await generateModeratorSummary(
+		mkbhdText,
+		unboxTherapyText,
+		mrWhosTheBossText,
+	);
+	console.log("\nModerator's Summary and Conclusion:");
+	console.log(moderatorSummary);
 }
 
 main().catch(console.error);

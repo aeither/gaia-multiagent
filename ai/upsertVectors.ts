@@ -2,7 +2,6 @@ import { createOpenAI as createGroq } from "@ai-sdk/openai";
 import { Index } from "@upstash/vector";
 import { embedMany } from "ai";
 import dotenv from "dotenv";
-import { encode } from "gpt-tokenizer";
 
 dotenv.config();
 
@@ -22,10 +21,6 @@ const groq = createGroq({
 	baseURL: "https://llamatool.us.gaianet.network/v1",
 	apiKey: "no_key",
 });
-
-function tokenLen(text: string): number {
-	return encode(text).length;
-}
 
 async function getEmbeddings(chunks: string[]): Promise<number[][]> {
 	const cleanChunks = chunks.map((c) => c.replace("\n", " "));
