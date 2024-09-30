@@ -89,6 +89,13 @@ async function main() {
 			tools: { billEvansQA },
 			maxSteps: 5,
 			prompt,
+			// onStepFinish({ text, toolCalls, toolResults, finishReason, usage }) {
+			// 	console.log('text:', text);
+			// 	console.log('toolCalls:', toolCalls);
+			// 	console.log('toolResults:', toolResults);
+			// 	console.log('finishReason:', finishReason);
+			// 	console.log('usage:', usage);
+			// },
 		});
 		return text;
 	};
@@ -152,7 +159,7 @@ Please provide a summary that compares the key points from each reviewer, highli
 	};
 
 	const prompt =
-		"What are your thoughts on the latest iPhone 15 Pro? Compare its features, performance, and value proposition to its main Android competitors. Also, how does its camera system stack up against other flagship phones?";
+		"What are your thoughts on the latest iPhone 16 Pro? Compare its features, performance, and value proposition to its main Android competitors. Also, how does its camera system stack up against other flagship phones?";
 
 	const inventoryText = await generateInventoryText(prompt);
 	const mkbhdText = await generateMKBHDText(prompt);
