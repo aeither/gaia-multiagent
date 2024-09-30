@@ -6,7 +6,7 @@ dotenv.config();
 
 const groq = createGroq({
 	baseURL: "https://llamatool.us.gaianet.network/v1",
-	apiKey: process.env.GROQ_API_KEY,
+	apiKey: "no_key",
 });
 
 // Simulated weather API function

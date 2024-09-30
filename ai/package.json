@@ -1,7 +1,13 @@
 {
-  "dependencies": { "@ai-sdk/openai": "^0.0.63", "@upstash/vector": "^1.1.6", "ai": "^3.4.7", "gpt-tokenizer": "^2.4.0", "openai": "^4.65.0" },
-  "devDependencies": {
-    "@types/node": "^22.7.4",
-    "dotenv": "^16.4.5"
-  }
+	"dependencies": {
+		"@ai-sdk/openai": "^0.0.63",
+		"@upstash/vector": "^1.1.6",
+		"ai": "^3.4.7",
+		"gpt-tokenizer": "^2.4.0",
+		"openai": "^4.65.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22.7.4",
+		"dotenv": "^16.4.5"
+	}
 }
