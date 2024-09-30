@@ -9,12 +9,10 @@ from upstash_vector import Index, Vector
 # Load environment variables
 load_dotenv()
 
-custom_base_url = "https://llama.us.gaianet.network/v1" 
-
 # Initialize OpenAI client
 openai = OpenAI(
     api_key="no_key",
-    base_url=custom_base_url
+    base_url="https://llama.us.gaianet.network/v1" 
 )
 
 # Initialize Upstash Vector index
