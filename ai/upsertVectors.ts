@@ -1,9 +1,9 @@
 import { createOpenAI as createGroq } from "@ai-sdk/openai";
 import { Index } from "@upstash/vector";
-import { embed, embedMany, generateText, tool } from "ai";
+import { embedMany } from "ai";
 import dotenv from "dotenv";
 import { encode } from "gpt-tokenizer";
-import { z } from "zod";
+
 dotenv.config();
 
 if (!process.env.UPSTASH_VECTOR_URL)
@@ -25,14 +25,6 @@ const groq = createGroq({
 
 function tokenLen(text: string): number {
 	return encode(text).length;
-}
-
-async function getEmbedding(text: string): Promise<number[]> {
-	const { embedding } = await embed({
-		model: groq.embedding("bge-base-en-v1.5"),
-		value: text.replace("\n", " "),
-	});
-	return embedding;
 }
 
 async function getEmbeddings(chunks: string[]): Promise<number[][]> {
@@ -59,7 +51,6 @@ function createMockText(): string {
 }
 
 function chunkText(text: string): string[] {
-	// Simplified text splitting function
 	return text.split(/\n+/).filter((chunk) => chunk.trim().length > 0);
 }
 
@@ -74,55 +65,10 @@ async function upsertVectors(chunks: string[]): Promise<void> {
 	console.log(`${vectors.length} vectors upserted successfully`);
 }
 
-interface QueryResult {
-	id: string;
-	score: number;
-	metadata: {
-		text: string;
-	};
-}
-
-async function askQuestion(question: string): Promise<string> {
-	const questionEmbedding = await getEmbedding(question);
-	const results = await index.query({
-		vector: questionEmbedding,
-		topK: 3,
-		includeMetadata: true,
-	});
-	const context = results.map((r) => r.metadata?.text ?? "").join("\n");
-
-	const prompt = `Question: ${question}\n\nContext: ${context}\n\nAnswer:`;
-	return prompt;
-}
-
-const billEvansQA = tool({
-	description:
-		"Answer questions about Bill Evans based on the provided context",
-	parameters: z.object({
-		question: z
-			.string()
-			.describe("The question about Bill Evans to be answered"),
-	}),
-	execute: async ({ question }) => {
-		const answer = await askQuestion(question);
-		return `Question: ${question}\nAnswer: ${answer}`;
-	},
-});
-
 async function main() {
 	const mockText = createMockText();
 	const chunks = chunkText(mockText);
 	await upsertVectors(chunks);
-
-	const { text } = await generateText({
-		model: groq("llama"),
-		tools: { billEvansQA },
-		maxSteps: 5,
-		prompt:
-			"Who is Debby in the album 'Waltz for Debby'? Also, where did Bill Evans study?",
-	});
-
-	console.log("Assistant:", text);
 }
 
 main().catch(console.error);
